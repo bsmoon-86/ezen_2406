@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Index Page</h1>
+    <p>인덱스 페이지입니다.</p>
+    <!-- 하이퍼링크 생성 -->
+    <!-- 절대 주소로 이동 -->
+    <a href="https://www.google.com">Google로 이동</a>
+    <a href="https://www.naver.com">Naver로 이동</a>
+    <!-- 상대 주소로 이동 -->
+    <a href="/second">Second 페이지로 이동</a>
+
+    <!-- 유저가 서버에게 데이터를 보내는 부분 -->
+    <h3>유저가 데이터를 입력하고 서버에게 보내는 태그</h3>
+    <form action="/second" method="get">
+        <!-- 유저가 데이터를 입력하는 공간 -->
+        <!-- input태그에서 name속성은 유저가 데이터를 보낼때 데이터의 형태는 dict -->
+        <!-- name 속성의 값은 dict의 key, 유저가 입력한 데이터 value -->
+        <label>ID</label>
+        <input type="text" name="_id">
+        <!-- br : 줄바꿈 -->
+        <br>
+        <label>password</label>
+        <input type="password" name="_pass">
+        <br>
+        <!-- 데이터를 보내는 버튼  -->
+        <input type="submit">
+    </form>
+</body>
+</html>
