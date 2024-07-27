@@ -1,5 +1,7 @@
 # 웹 프레임워크를 로드 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
+# custom_db 모듈을 로드 
+import custom_db as c_db
 
 # render_template()함수
 # 현재 경로에서 templates라는 하위 폴더에 있는 html문서를 되돌려주는 함수
@@ -10,6 +12,18 @@ from flask import Flask, render_template, request
 # 생성자 함수(__init__)에는 필수 인자값 1개 존재 : 파일의 이름 
 # 파일의 이름 : __name__
 app = Flask(__name__)
+
+# 외부의 DB 서버와 연결하는 class 생성
+db = c_db.MyDB(
+    _host = '172.16.106.1', 
+    _port = 3306, 
+    _user = 'ezen', 
+    _password = '1234', 
+    _db = 'ezen'
+)
+# 내부의 DB 서버와의 연결하는 class 생성
+local_db = c_db.MyDB()
+
 
 # api를 생성 
 # 특정 주소로 요청이 들어왔을때 어떠한 데이터를 응답 메시지로 보내줄지를 지정 
@@ -38,10 +52,35 @@ def second():
     data = "이젠아카데미"
     print(f"유저가 입력한 아이디는 {input_id}, 비밀번호는 {input_pass}")
     # 특정 아이디와 비밀번호인 경우에만 second.html를 보여준다. 
-    if (input_id == 'test') and (input_pass == '1111'):
-        return render_template('second.html', d = data)
+    # if (input_id == 'test') and (input_pass == '1111'):
+    #     return render_template('second.html', d = data)
+    # else:
+    #     return '로그인 실패'
+    # DB 서버에 유저가 입력한 id와 password를 비교
+    login_query = """
+        select 
+        * 
+        from 
+        `user`
+        where 
+        `id` = %s 
+        and 
+        `password` = %s
+    """
+    # local에 있는 DB에 확인 
+    db_result = local_db.sql_query(login_query, input_id, input_pass)
+    # 로그인이 성공하는 조건? -> db_result에 데이터가 존재(길이가 1)
+    # if len(db_result) == 1:
+    if db_result:
+        # second.html과 로그인을 한 유저의 이름
+        # [{'id' : 'test', password : '1234', name : 'kim'}]
+        user_name = db_result[0]['name']
+        return render_template('second.html', d=user_name)
     else:
-        return '로그인 실패'
+        # 로그인 화면으로 되돌아간다. 
+        # 127.0.0.1:5000/ 주소를 재요청한다. 
+        # return render_template('index.html')
+        return redirect('/')
 
 # 서버를 실행 
 # run() 함수의 매개변수 
