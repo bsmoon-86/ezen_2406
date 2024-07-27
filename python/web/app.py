@@ -82,6 +82,32 @@ def second():
         # return render_template('index.html')
         return redirect('/')
 
+# /login api 생성(post 방식)
+@app.route('/login', methods=['post'])
+def login():
+    # 유저가 보낸 데이터를 변수에 저장 
+    # post로 보낸 데이터는 request 안에 form에 데이터가 존재
+    input_id  = request.form['_id']
+    input_pass = request.form['_pass']
+    print(f"유저가 입력한 id는 {input_id}이고 password는 {input_pass}")
+    # DB 서버에서 id, pass를 확인 
+    # 외부의 DB 서버에 접속
+    login_query = """
+        select * from `user`
+        where `id` = %s and `password` = %s
+    """
+    db_result = db.sql_query(login_query, input_id, input_pass)
+    if db_result:
+        # 외부의 데이터 파일을 로드하여 보내는 형태
+        data_load = """
+            select * from `drinks`
+        """
+        result = db.sql_query(data_load)
+        return result
+    else:
+        return 'id 혹은 password가 맞지 않습니다.'
+
+
 # 서버를 실행 
 # run() 함수의 매개변수 
 # debug 매개변수 : False(기본값)-> 서버를 강제적으로 재실행해야 수정된 코드가 반영, True -> 개발자 모드 파일이 수정됬을때 서버가 자동으로 재실행
