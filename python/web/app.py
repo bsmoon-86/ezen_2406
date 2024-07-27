@@ -107,6 +107,40 @@ def login():
     else:
         return 'id 혹은 password가 맞지 않습니다.'
 
+# 실제로 사용이 되는 openapi형태의 주소를 생성
+@app.route('/data')
+def data():
+    # 필수 적으로 유저의 정보를 입력하는 부분
+    input_id = request.args['service_id']
+    input_pass = request.args['service_pass']
+    try:
+        input_continent = request.args['continent']
+    except:
+        input_continent = 'all'
+    # input_id, input_pass를 이용하여 DB 정보와 확인 
+    check_query = """
+        select * from `user` 
+        where `id` = %s and `password` = %s
+    """
+    db_result = db.sql_query(check_query, input_id, input_pass)
+    if db_result:
+        # input_continent의 값이 all이라면?
+        if input_continent == 'all':
+            data_load = """
+                select * from `drinks`
+            """
+            result = db.sql_query(data_load)
+        else:
+            data_load = """
+                select * from `drinks`
+                where `continent` = %s
+            """
+            result = db.sql_query(data_load, input_continent)
+        return result
+    else:
+        return 'Service_id | Service_pass Error'
+
+
 
 # 서버를 실행 
 # run() 함수의 매개변수 
