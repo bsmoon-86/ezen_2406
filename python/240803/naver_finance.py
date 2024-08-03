@@ -20,8 +20,10 @@ section_data = finance_soup.find('div', attrs = {
 # table 4개의 정보를 모두 저장 
 tables = section_data.find_all('table')
 
+table_info = ['거래상위', '상승', '하락', '시가총액']
+
 # 반복문을 이용하여 tables데이터를 반복 실행
-for table1 in tables:
+for table1, info in zip(tables, table_info):
     # table1에서 thead의 값들을 출력하여 DataFrame에 columns의 값을 사용
     thead_data = table1.find('thead')
 
@@ -56,3 +58,6 @@ for table1 in tables:
 
     # cols, values를 이용하여 DataFrame 생성
     df = pd.DataFrame(values, columns=cols)
+
+    # 데이터프레임을 엑셀로 저장 
+    df.to_excel(f'naver_sise_{info}.xlsx')
